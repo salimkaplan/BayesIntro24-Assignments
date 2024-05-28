@@ -1,0 +1,99 @@
+---
+title: "Assignment"
+format: pdf
+---
+
+# General Information 
+
+  - **Points**: Assignment 1 comprises of 6 tasks, 2 points each (12 in total). 2 points are obtained for complete and correct answers. 1 point is obtained for a proper approach or if only part of the task is solved.
+  
+  - **Submission**: Hand in the assignment as a `Markdown` report ([RMarkdown](https://rmarkdown.rstudio.com/lesson-15.html) or [Quarto](https://rstudio.github.io/cheatsheets/html/quarto.html)) rendered as PDF. The PDF report should show the result(s), the code that produced the result(s), and possibly additional text or comment. Also indicate your name. The report should be uploaded on Moodle until Wednesday, May 29, 9:45 am.
+  
+  - **Code**: Improve the readibility of your code by `#commenting` it.
+  
+  - **Working in teams**: Everyone needs to hand in a report on Moodle. However, the report can be handed in as a team work (max. 2 people). When working in teams, state at the beginning of the document, who you worked with. It Ideally, teams use GitHub and add a link to the GitHub repository to which both contributed.
+  
+  - **Document cannot be created**
+  
+    - No `LaTeX` installed: Install `TinyTex` (`tinytex::install_tinytex()`) to be able to render the document as PDF.
+    
+    - Packages are not loaded: In the first code chunk of the `Markdown` document, load all the packages (`library()`) that you use throughout the document, otherwise the report will not be rendered. 
+    
+    - Errors: If code produces an error, the `Markdown` report will not be rendered, unless you tell `Markdown` that the respective code chunk should be ignored (not evaluated). In `RMarkdown`, do so via the chunk settings in the top-right corner of a code chunk. In Quarto, do so by including `#| echo: true` and `#| eval: false` in the code chunk (first two lines). 
+    
+    - In case of further questions, consult the two links above, search the internet, or ask other students. As the very last resort: Hand in a simple `R` script.
+  
+\newpage
+  
+```{r}
+# load packages here
+```
+
+
+# Task Set 1
+
+For tasks 1.1-1.3, assume you throw 3 dice -- normal dice with 6 sides each ;) 
+
+## Task 1.1
+
+Create a data frame with all possible combinations (outcomes) that can result from throwing all the dice. 
+(Each row should represent one possible outcome.) 
+Print the first and last 10 rows of the data frame and state how many possible outcomes there are.
+
+```{r}
+# write code here
+```
+
+## Task 1.2
+
+Create a data frame showing all possible sums that can result from throwing the three dice along with their probabilities.
+Report the results in a summary table (data frame) and a plot (visual graph). 
+
+```{r}
+#write code here
+```
+
+## Task 1.3
+
+Compute the probability that the sum is $\geq$ `10`, *given* that at least one of the dice shows a `3`.
+
+```{r}
+# write code here
+```
+
+\newpage
+
+# Task Set 2
+
+For Task 2.1-2.3, assume you toss a globe `10` times, leading to either land or water.
+
+## Task 2.1
+
+Compute the probability of all possible numbers of occurrence of land, given the candidate proportion of `.5`.
+Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
+
+```{r}
+#write code here
+```
+
+## Task 2.2
+
+Assume you observe `7` water.
+Take the candidate proportions of land `cp =` `r seq(0,1,.1)`.
+For each of these candidates, compute the probability of observing `7` water. 
+Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
+
+```{r}
+#write code here
+```
+
+## Task 2.3
+
+For each candidate proportion of land, compute the probability of all possible number of occurrences of land.
+Report the results in a summary table, showing the probability distributions as columns and the likelihood functions as rows.
+
+```{r}
+#write code here
+```
+
+
