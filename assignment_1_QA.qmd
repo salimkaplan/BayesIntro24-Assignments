@@ -1,56 +1,60 @@
 ---
-title: "Assignment"
+title: "Assignment-1 Q&A Bilge Salman (03796071), Salim Kaplan (0378856)"
 format: pdf
 ---
 
-# General Information 
-
-  - **Points**: Assignment 1 comprises of 6 tasks, 2 points each (12 in total). 2 points are obtained for complete and correct answers. 1 point is obtained for a proper approach or if only part of the task is solved.
-  
-  - **Submission**: Hand in the assignment as a `Markdown` report ([RMarkdown](https://rmarkdown.rstudio.com/lesson-15.html) or [Quarto](https://rstudio.github.io/cheatsheets/html/quarto.html)) rendered as PDF. The PDF report should show the result(s), the code that produced the result(s), and possibly additional text or comment. Also indicate your name. The report should be uploaded on Moodle until Wednesday, May 29, 9:45 am.
-  
-  - **Code**: Improve the readibility of your code by `#commenting` it.
-  
-  - **Working in teams**: Everyone needs to hand in a report on Moodle. However, the report can be handed in as a team work (max. 2 people). When working in teams, state at the beginning of the document, who you worked with. It Ideally, teams use GitHub and add a link to the GitHub repository to which both contributed.
-  
-  - **Document cannot be created**
-  
-    - No `LaTeX` installed: Install `TinyTex` (`tinytex::install_tinytex()`) to be able to render the document as PDF.
-    
-    - Packages are not loaded: In the first code chunk of the `Markdown` document, load all the packages (`library()`) that you use throughout the document, otherwise the report will not be rendered. 
-    
-    - Errors: If code produces an error, the `Markdown` report will not be rendered, unless you tell `Markdown` that the respective code chunk should be ignored (not evaluated). In `RMarkdown`, do so via the chunk settings in the top-right corner of a code chunk. In Quarto, do so by including `#| echo: true` and `#| eval: false` in the code chunk (first two lines). 
-    
-    - In case of further questions, consult the two links above, search the internet, or ask other students. As the very last resort: Hand in a simple `R` script.
-  
-\newpage
-  
 ```{r}
 # load packages here
-```
+library(tidyverse)
+library(tidyr)
+library(stats)
 
+theme_set(theme_light())
+```
 
 # Task Set 1
 
-For tasks 1.1-1.3, assume you throw 3 dice -- normal dice with 6 sides each ;) 
+For tasks 1.1-1.3, assume you throw 3 dice -- normal dice with 6 sides each ;)
 
 ## Task 1.1
 
-Create a data frame with all possible combinations (outcomes) that can result from throwing all the dice. 
-(Each row should represent one possible outcome.) 
-Print the first and last 10 rows of the data frame and state how many possible outcomes there are.
+Create a data frame with all possible combinations (outcomes) that can result from throwing all the dice. (Each row should represent one possible outcome.) Print the first and last 10 rows of the data frame and state how many possible outcomes there are.
 
 ```{r}
-# write code here
+# df for all possible combinations of outcomes from throwing three dice
+all_combinations <- expand.grid(die1 = 1:6, die2 = 1:6, die3 = 1:6)
+
+# the first and last 10 rows of the df
+print(head(all_combinations, 10))
+print(tail(all_combinations, 10))
+
+# Number of possible outcomes
+num_outcomes <- nrow(all_combinations)
+cat("Number of possible outcomes:", num_outcomes)
 ```
 
 ## Task 1.2
 
-Create a data frame showing all possible sums that can result from throwing the three dice along with their probabilities.
-Report the results in a summary table (data frame) and a plot (visual graph). 
+Create a data frame showing all possible sums that can result from throwing the three dice along with their probabilities. Report the results in a summary table (data frame) and a plot (visual graph).
 
 ```{r}
-#write code here
+# Calculate the sum of each row
+all_combinations$sum <- rowSums(all_combinations)
+
+# Calculate the probabilities of each sum
+sum_probabilities <- as.data.frame(table(all_combinations$sum))
+colnames(sum_probabilities) <- c("Sum", "Frequency")
+sum_probabilities$Probability <- sum_probabilities$Frequency / num_outcomes
+
+# the summary table
+sum_probabilities
+
+# plot
+ggplot(sum_probabilities, aes(x = Sum, y = Probability)) +
+  geom_bar(stat = "identity", fill = 'blue') +
+  labs(title = "Probability distribution of sums from throwing three dice",
+       x = "Sum",
+       y = "Probability")
 ```
 
 ## Task 1.3
@@ -58,7 +62,19 @@ Report the results in a summary table (data frame) and a plot (visual graph).
 Compute the probability that the sum is $\geq$ `10`, *given* that at least one of the dice shows a `3`.
 
 ```{r}
-# write code here
+# filtering the outcomes where at least one die shows a 3
+outcomes_with_3 <- subset(all_combinations, die1 == 3 | die2 == 3 | die3 == 3)
+
+# calculating the total number of the outcomes
+total_outcomes_with_3 <- nrow(outcomes_with_3)
+
+# outcomes where the sum is greater than 9
+outcomes_with_sum_ge_10 <- subset(outcomes_with_3, sum >= 10)
+num_outcomes_with_sum_ge_10 <- nrow(outcomes_with_sum_ge_10)
+
+# probability calculation
+probability_sum_ge_10_given_3 <- num_outcomes_with_sum_ge_10 / total_outcomes_with_3
+cat("Probability that the sum is >= 10 given that at least one die shows a 3 is:", round(probability_sum_ge_10_given_3, 2))
 ```
 
 \newpage
@@ -69,8 +85,7 @@ For Task 2.1-2.3, assume you toss a globe `10` times, leading to either land or 
 
 ## Task 2.1
 
-Compute the probability of all possible numbers of occurrence of land, given the candidate proportion of `.5`.
-Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
+Compute the probability of all possible numbers of occurrence of land, given the candidate proportion of `.5`. Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
 
 ```{r}
 #write code here
@@ -78,10 +93,7 @@ Report the results in a summary table and a plot and indicate whether the plot s
 
 ## Task 2.2
 
-Assume you observe `7` water.
-Take the candidate proportions of land `cp =` `r seq(0,1,.1)`.
-For each of these candidates, compute the probability of observing `7` water. 
-Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
+Assume you observe `7` water. Take the candidate proportions of land `cp =` `r seq(0,1,.1)`. For each of these candidates, compute the probability of observing `7` water. Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
 
 ```{r}
 #write code here
@@ -89,11 +101,8 @@ Report the results in a summary table and a plot and indicate whether the plot s
 
 ## Task 2.3
 
-For each candidate proportion of land, compute the probability of all possible number of occurrences of land.
-Report the results in a summary table, showing the probability distributions as columns and the likelihood functions as rows.
+For each candidate proportion of land, compute the probability of all possible number of occurrences of land. Report the results in a summary table, showing the probability distributions as columns and the likelihood functions as rows.
 
 ```{r}
 #write code here
 ```
-
-
