@@ -10,6 +10,7 @@ editor_options:
 library(tidyverse)
 library(tidyr)
 library(stats)
+library(tinytex)
 
 theme_set(theme_light())
 ```
@@ -117,6 +118,7 @@ data <- simulate_global_tosses(10, .5)
 
 # Computing probabilities
 summary_table <- counter(data, cp = 0.5)
+summary_table
 
 # Plot the probability distribution
 ggplot(summary_table, aes(x = Land , y = Probability)) + 
@@ -149,6 +151,7 @@ cp = seq(0,1,0.1)
 
 # Computing probabilities
 summary_table_2 <- counter_2(n, W)
+summary_table_2
 
 # Plot the probability distribution
 ggplot(summary_table_2, aes(x = `Candidate Proportion`, y = Probability)) + 
