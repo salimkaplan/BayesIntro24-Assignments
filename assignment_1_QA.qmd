@@ -1,5 +1,5 @@
 ---
-title: "Assignment-1 Q&A Bilge Salman (03796071), Salim Kaplan (0378856)"
+title: "Assignment-1 Q&A Bilge Salman (03796071), Salim Kaplan (0378856) GitHub link: https://github.com/salimkaplan/BayesIntro24-Assignments/tree/main"
 format: pdf
 editor_options: 
   chunk_output_type: console
