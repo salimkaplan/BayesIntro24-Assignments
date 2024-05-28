@@ -1,6 +1,8 @@
 ---
 title: "Assignment-1 Q&A Bilge Salman (03796071), Salim Kaplan (0378856)"
 format: pdf
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
@@ -88,7 +90,40 @@ For Task 2.1-2.3, assume you toss a globe `10` times, leading to either land or 
 Compute the probability of all possible numbers of occurrence of land, given the candidate proportion of `.5`. Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
 
 ```{r}
-#write code here
+# Simulating global tosses with function
+simulate_global_tosses <- function(n,p) {
+  
+  data <- sample(c("L","W"), size = n, replace= TRUE, prob = c(p,1-p))
+  return(data)
+}
+
+
+# Computing the probabilities for all possible numbers of occurrences of land
+counter <- function(data,cp){
+  
+  n <- length(data)
+  L <- sum(data == "L")
+  
+  probabilities <- sapply(0:n, function(k) {
+    dbinom(k, n, cp)})
+
+  results <- data.frame("Land" = 0:n, "Probability" = probabilities)
+  return(results)
+  
+}
+
+# we are assuming toss a globe 10 times with 0.5 probability
+data <- simulate_global_tosses(10, .5)
+
+# Computing probabilities
+summary_table <- counter(data, cp = 0.5)
+
+# Plot the probability distribution
+ggplot(summary_table, aes(x = Land , y = Probability)) + 
+  geom_bar(stat = "identity", fill = "purple") + 
+  labs(x = "Number of Land Occurrences", 
+       y = "Probability",
+       title = "Binomial Distribution of Land Occurrences (p = 0.5)")
 ```
 
 ## Task 2.2
@@ -96,7 +131,32 @@ Compute the probability of all possible numbers of occurrence of land, given the
 Assume you observe `7` water. Take the candidate proportions of land `cp =` `r seq(0,1,.1)`. For each of these candidates, compute the probability of observing `7` water. Report the results in a summary table and a plot and indicate whether the plot shows a probability distribution or a likelihood function.
 
 ```{r}
-#write code here
+# Computing the probability of observing 7 waters for different candidate proportions of land
+counter_2 <- function(n, W) {
+  data_2 <-  c("W","W","W","W","W","W","W") # we are assuming we observed 7 water
+  W <- sum(data_2 == "W")
+  
+  probabilities <- sapply(cp, function(p) {
+    dbinom(W, n, 1 - p) 
+  })
+  results <- data.frame("Candidate Proportion" = cp, "Probability" = probabilities, check.names = F)
+  return(results)
+}
+
+# Setting parameters
+n <- 10
+cp = seq(0,1,0.1)
+
+# Computing probabilities
+summary_table_2 <- counter_2(n, W)
+
+# Plot the probability distribution
+ggplot(summary_table_2, aes(x = `Candidate Proportion`, y = Probability)) + 
+  geom_line(linewidth = 1, color = "purple") + 
+  geom_point(color = "purple") +
+  labs(x = "Candidate Proportion of Land", 
+       y = "Probability of Observing 7 Waters",
+       title = "Probability of Observing 7 Waters for Different Proportions of Land")
 ```
 
 ## Task 2.3
@@ -104,5 +164,27 @@ Assume you observe `7` water. Take the candidate proportions of land `cp =` `r s
 For each candidate proportion of land, compute the probability of all possible number of occurrences of land. Report the results in a summary table, showing the probability distributions as columns and the likelihood functions as rows.
 
 ```{r}
-#write code here
+counter_3 <- function(n) {
+  
+  results_matrix <- matrix(NA, nrow = n + 1, ncol = length(cp))
+  
+  for (i in 1:length(cp)) {
+    probabilities <- dbinom(0:n, n, cp[i])
+    results_matrix[ ,i ] <- probabilities
+  }
+  
+  results <- as.data.frame(results_matrix)
+  rownames(results) <- paste("Land ", 0:n, sep = " ")
+  colnames(results) <- cp
+  return(results)
+}
+
+
+# Setting parameters
+n <- 10
+cp = seq(0,1,0.1)
+
+# Compute results
+summary_table_3 <- counter_3(n)
+summary_table_3
 ```
