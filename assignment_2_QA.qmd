@@ -11,7 +11,8 @@ editor:
 ```{r}
 # load packages here
 library(tidyverse)
-
+library(tibble)
+library(ggplot2)
 theme_set(theme_light())
 ```
 
@@ -158,9 +159,12 @@ Specify a prior distribution and store 10,000 random samples from it in a vector
 Plot the prior distribution and briefly explain your choice of the prior.
 
 ```{r}
+# Assuming we have no prior information about the phenomenon,
+# we will  use beta distribution with parameters 1,1 
+# which is equivalent to uniform distribution. 
+
 # 10k random samples from the prior distribution
 sample <- rbeta(10000, 1, 1) %>%
-  
   as_tibble()
 
 sample %>% 
@@ -172,14 +176,13 @@ sample %>%
 
 Run the following code chunk that uses your object sample to obtain prior probabilities for the possible proportions of land 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 that approximate your prior distribution.
 
-```{r eval=FALSE, echo=TRUE}
+```{r}
 prop <- seq(0, 1, length.out = 12)
 priors <- vector("numeric", length(prop))
 for (i in seq_along(prop)){
 priors[i] <- round( sum(sample >= prop[i] & sample < prop[i+1]) / 1e4 , 2)
 }
-poss <- tibble(prop_L = seq(0, 1, .1),
-prior = priors[1:11])
+poss <- tibble(prop_L = seq(0, 1, .1), prior = priors[1:11])
 ```
 
 Use these priors to compute the posterior probability after observing 26 times land in 100 globe tosses.
