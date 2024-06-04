@@ -3,6 +3,9 @@ title: "Assignment-2 Q&A Bilge Salman (03796071), Salim Kaplan (0378856) GitHub 
 format: pdf
 editor_options: 
   chunk_output_type: console
+editor: 
+  markdown: 
+    wrap: sentence
 ---
 
 ```{r}
@@ -11,7 +14,6 @@ library(tidyverse)
 
 theme_set(theme_light())
 ```
-
 
 # Task Set 1
 
@@ -25,7 +27,25 @@ Assume that Company B is twice as likely to obtain reviews than Company A and C.
 Show that the posterior probability that Company A was rated is $\approx$ 0.29.
 
 ```{r}
-# write code here
+# Assuming that Company B is twice as likely to obtain reviews than Company A and C.
+# Prior probabilities
+prior_A <- 0.2
+prior_B <- 0.4
+prior_C <- 0.2
+
+# Likelihoods using dbinom (6 positive, 4 negative)
+likelihood_A <- dbinom(6, 10, 0.7)
+likelihood_B <- dbinom(6, 10, 0.5)
+likelihood_C <- dbinom(6, 10, 0.8)
+
+# Updating & Standardization 
+sum_posterior <- sum(likelihood_A * prior_A, likelihood_B * prior_B, likelihood_C * prior_C )
+
+posterior_A <- (likelihood_A * prior_A) / sum_posterior
+posterior_B <- (likelihood_B * prior_B) / sum_posterior
+posterior_C <- (likelihood_C * prior_C) / sum_posterior
+
+paste("Posterior probability that Company A is approximately", round(posterior_A, 2))
 ```
 
 ## Task 1.2
@@ -35,7 +55,25 @@ Show that the posterior probability that Company C received the reviews increase
 To obtain the updated posterior, compute the likelihood of the 10 most recent reviews only.
 
 ```{r}
-# write code here
+# New likelihoods using dbinom (9 positive and 1 negative)
+likelihood_A_new <- dbinom(9, 10, 0.7)
+likelihood_B_new <- dbinom(9, 10, 0.5)
+likelihood_C_new <- dbinom(9, 10, 0.8)
+
+# Updating
+prior_A <- posterior_A
+prior_B <- posterior_B
+prior_C <- posterior_C
+
+# Updating & Standardization 
+sum_posterior_new <- sum(likelihood_A_new * prior_A, likelihood_B_new * prior_B, 
+                         likelihood_C_new * prior_C )
+
+posterior_A_new <- (likelihood_A_new * prior_A) / sum_posterior_new
+posterior_B_new <- (likelihood_B_new * prior_B) / sum_posterior_new
+posterior_C_new <- (likelihood_C_new * prior_C) / sum_posterior_new
+
+paste("Company C received the reviews increases by", round((posterior_C_new - posterior_C),2))
 ```
 
 \newpage
@@ -53,7 +91,26 @@ You receive a shipment from one of the factories, and upon inspection, you find 
 Compute the probability that the next shipment from this company will also contain defective products.
 
 ```{r}
-# write code here
+# Prior probabilities
+prior_A <- 0.5
+prior_B <- 0.5
+
+# Likelihoods using defect rates
+likelihood_A <- 0.1
+likelihood_B <- 0.2
+
+# Updating & Standardization 
+sum_posterior <- sum(likelihood_A * prior_A, likelihood_B * prior_B)
+
+posterior_A <- (likelihood_A * prior_A) / sum_posterior
+posterior_B <- (likelihood_B * prior_B) / sum_posterior
+
+# Calculate the probability that the next shipment will also contain defective products
+probability <- sum(posterior_A * likelihood_A, posterior_B*likelihood_B)
+
+# Print the probability
+paste("Probability that the next shipment contain defective products is", probability)
+
 ```
 
 ## Task 2.2
@@ -68,7 +125,25 @@ This is the information you have about the algorithm:
 When applying the the algorithm to the shipped products, the test is positive for Factory A. Including the defect data from 2.1, compute the posterior probability that your shipment is from Company A.
 
 ```{r}
-# write code here
+# New likelihoods 
+likelihood_A_new <- 0.93
+
+# likelihood of the shipped products being from Factory B
+# 7% chance of incorrectly classifying products from Factory B as Factory A
+likelihood_B_new <- 1 - 0.87
+
+# Updating
+prior_A <- posterior_A
+prior_B <- posterior_B
+
+
+# Updating & Standardization 
+sum_posterior_new <- sum(likelihood_A_new * prior_A, likelihood_B_new * prior_B)
+
+posterior_A_new <- (likelihood_A_new * prior_A) / sum_posterior_new
+
+paste("Posterior probability that the shipment is from Company A", posterior_A_new)
+
 ```
 
 \newpage
