@@ -1,0 +1,128 @@
+---
+title: "Assignment"
+format: pdf
+---
+
+# General Information 
+
+  - **Points**: Assignment 2 comprises of 6 tasks, 2 points each (12 in total). 2 points are obtained for complete and correct answers. 1 point is obtained for a proper approach or if only part of the task is solved.
+  
+  - **Submission**: Hand in the assignment as a `Markdown` report ([RMarkdown](https://rmarkdown.rstudio.com/lesson-15.html) or [Quarto](https://rstudio.github.io/cheatsheets/html/quarto.html)) rendered as PDF. The PDF report should show the result(s), the code that produced the result(s), and possibly additional text or comment. Also indicate your name. The report should be uploaded on Moodle until Wednesday, June 5, 9:45 am.
+  
+  - **Working in teams**: Everyone needs to hand in a report on Moodle. However, the report can be handed in as a team work (max. 2 people). When working in teams, state at the beginning of the document, who you worked with. It Ideally, teams use GitHub and add a link to the GitHub repository to which both contributed.
+  
+  - **Code**: To automate code wrapping (such that long code lines are not cut off), install the [formatR](https://bookdown.org/yihui/rmarkdown-cookbook/opts-tidy.html) package and add the following code chunk at the beginning of the document:
+
+```{r}
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts=list(width.cutoff=50))
+```
+
+\newpage
+  
+```{r}
+# load packages here
+```
+
+
+# Task Set 1
+
+For tasks 1.1-1.2, suppose there are 3 companies, Company A to C. 
+Company A has a customer satisfaction rate of .70, Company B of .50, and Company C of .80. 
+Further suppose that you receive 10 customer reviews (6 positive, 4 negative) for the same company, but you don’t know for which company.
+Assume that Company B is twice as likely to obtain reviews than Company A and C.  
+
+## Task 1.1
+
+Show that the posterior probability that Company A was rated is $\approx$ 0.29.
+
+```{r}
+# write code here
+```
+
+## Task 1.2
+
+Suppose you receive 10 more reviews (9 positive and 1 negative). 
+Show that the posterior probability that Company C received the reviews increases by $\approx$ 33 percentage points, when considering all 20 rather than only the first 10 reviews. 
+To obtain the updated posterior, compute the likelihood of the 10
+most recent reviews only. 
+
+```{r}
+# write code here
+```
+
+\newpage
+
+# Task Set 2
+
+For tasks 2.1 and 2.2, suppose there are Factory A and Factory B, producing the same product.
+The company C receives equally many shipments from both factories. 
+Even though the machines, processes, and standards are virtually identical, the factories differ in
+their defect rates. 
+Shipments from Factory A entail defective products 10% of the time, shipments from Factory B entail defective products 20% of the time.
+
+## Task 2.1
+
+You receive a shipment from one of the factories, and upon inspection, you find that the shipment contains defective products.
+Compute the probability that the next shipment from this company will also contain defective products.
+
+```{r}
+# write code here
+```
+
+
+## Task 2.2
+
+Suppose the R&D department came up with a Machine Learning algorithm that (imperfectly) identifies the factory based on the shipped products.
+But the classification algorithm is imperfect. 
+This is the information you have about the algorithm: 
+
+  - The probability it correctly identifies a Factory A product is 93%.
+  - The probability it correctly identifies a Factory B product is 87%.
+  
+When applying the the algorithm to the shipped products, the test is positive for Factory A.
+Including the defect data from 2.1, compute the posterior probability that your shipment is from Company A. 
+
+```{r}
+# write code here
+```
+
+\newpage
+
+
+# Task Set 3
+
+
+For Task 3.1 and 3.2, suppose, one last time, you want to estimate the proportions of land on the earth’s.
+
+## Task 3.1
+
+Specify a prior distribution and store 10,000 random samples from it in a vector `sample`.
+Plot the prior distribution and briefly explain your choice of the prior.
+
+```{r}
+# write code here
+```
+
+## Task 3.2 
+
+Run the following code chunk that uses your object sample to obtain prior probabilities
+for the possible proportions of land 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1 that
+approximate your prior distribution. 
+
+```{r eval=FALSE, echo=TRUE}
+prop <- seq(0, 1, length.out = 12)
+priors <- vector("numeric", length(prop))
+for (i in seq_along(prop)){
+priors[i] <- round( sum(sample >= prop[i] & sample < prop[i+1]) / 1e4 , 2)
+}
+poss <- tibble(prop_L = seq(0, 1, .1),
+prior = priors[1:11])
+```
+
+Use these priors to compute the posterior probability after observing 26 times land in 100 globe tosses.
+Take 1,000 samples from the posterior distribution and with each sample, predict the outcome of 100 globe tosses.
+Plot the posterior predictions in a histogram.
+
+```{r}
+#write code here
+```
