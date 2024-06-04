@@ -158,7 +158,14 @@ Specify a prior distribution and store 10,000 random samples from it in a vector
 Plot the prior distribution and briefly explain your choice of the prior.
 
 ```{r}
-# write code here
+# 10k random samples from the prior distribution
+sample <- rbeta(10000, 1, 1) %>%
+  
+  as_tibble()
+
+sample %>% 
+  ggplot() +
+  geom_histogram(aes(value), fill = "lightblue", color = "black") 
 ```
 
 ## Task 3.2
@@ -180,5 +187,25 @@ Take 1,000 samples from the posterior distribution and with each sample, predict
 Plot the posterior predictions in a histogram.
 
 ```{r}
-#write code here
+likelihood <- dbinom(26, size = 100, prob = poss$prop_L)
+
+# Calculate the evidence
+evidence <- sum(likelihood * poss$prior)
+
+# Calculate the posterior probabilities
+poss$posterior <- likelihood * poss$prior / evidence
+
+# samples from the posterior distribution
+samples <- sample(poss$prop_L, size = 1000, replace = TRUE, prob = poss$posterior)
+
+# using samples to predict the outcome of 100 globe tosses
+predictions <- rbinom(1000, size = 100, prob = samples) %>% 
+  as_tibble()
+
+# final plot for histogram
+ggplot() +
+  geom_histogram(data = predictions, aes(value), fill = "lightblue", color = "black") +
+  labs(x = "Number of Times Land",
+       y = "Frequency")
+
 ```
