@@ -154,7 +154,27 @@ Compute the squared errors for the simple regression model and the multiple regr
 Which model makes better predictions for the test data? 
 
 ```{r}
-# write code here
+# Error function to calculate the sum of squared errors
+error <- function(predicted, observed) {
+  sum((predicted - observed)^2)
+}
+
+# Error for simple regression model (Task 1.1)
+error_1.1 <- error(pred_mean_1.1, shaq_test$PTS)
+
+# Error for multiple regression model (Task 1.2)
+error_1.2 <- error(pred_mean_1.2, shaq_test$PTS)
+
+# Results
+cat( "Error for simple regression model", error_1.1, "\n")
+cat("Error for multiple regression model", error_1.2, "\n")
+
+# Which model makes better predictions for the test data?
+
+# The Multiple Regression Model looks at not only FGA but also FTA. 
+# This additional information helps the model make more accurate predictions. 
+# Therefore, a multiple regression model that includes more variables and relies 
+# on more information has the potential to improve predictions.
 ```
 
 
@@ -164,7 +184,21 @@ For both models, compute the (non-squared) differences between each prediction a
 Create a plot that shows the distributions of differences for both models. 
 
 ```{r}
-# write code here
+# Computing the (non-squared) differences
+diff_1.1 <- pred_mean_1.1 - shaq_test$PTS
+diff_1.2 <- pred_mean_1.2 - shaq_test$PTS
+
+# Plot shows the distributions of differences for both models
+data_diff <- data.frame(
+  Model = rep(c("Simple Regression", "Multiple Regression"), 
+              each = length(diff_1.1)),
+  Difference = c(diff_1.1, diff_1.2)
+)
+
+ggplot(data_diff, aes(x = Difference, fill = Model)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Distribution of Differences Between Prediction and Actual Scores",
+       x = "Differences", y = "Density")
 ```
 
 
