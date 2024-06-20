@@ -62,7 +62,23 @@ Again, the intercept should represents the expected number of points, given an a
 Provide a table that summarizes the posterior distribution.
 
 ```{r}
-#write code here
+# Task 1.2
+# multiple linear model
+model_1.2 <- quap(
+  alist(
+    PTS ~ dnorm(mu, sigma),
+    mu <- a + bFGA * FGA * 2 + bFTA * FTA,
+    a ~ dunif(0, 10),
+    bFGA ~ dunif(0, 1),
+    bFTA ~  dunif(0, 1),
+    sigma ~ dunif(0, 8)
+  ),
+  data = shaq_training
+)
+
+# Summary table of posterior distribution 
+precis(model_1.2)
+
 ```
 
 
