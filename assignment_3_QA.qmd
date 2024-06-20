@@ -89,7 +89,9 @@ precis(model_1.2)
 For Tasks 2.1 and 2.2, create a training data set `shaq_test` that contains all the data from the `Season` 6 to 10. 
 
 ```{r}
-#write code here
+# Test data set
+shaq_test <- shaq %>% filter(Season >= 6 & Season <= 10)
+
 ```
 
 # Task 2.1 
@@ -98,7 +100,20 @@ Use posterior samples from the simple regression model that you estimated in Tas
 Create a plot that shows the predicted point distribution along the actual point distribution from Season `Season` 6 to 10. 
 
 ```{r}
-#write code here
+# Making predictions using the Task 1.1 model
+predictions_1.1 <- link(model_1.1, data = shaq_test)
+
+# Getting average estimates
+pred_mean_1.1 <- apply(predictions_1.1, 2, mean)
+
+# Plot that shows the predicted point distribution along the actual point distribution
+ggplot() +
+  geom_point(aes(x = shaq_test$PTS, y = pred_mean_1.1), color = "#ff02ff") +
+  geom_abline(intercept = 0, slope = 1, color = "blue") +
+  labs(x = "Actual Points", y = "Predicted Points", title = "Simple Regression Model Predictions")
+
+
+
 ```
 
 
@@ -108,7 +123,20 @@ Use posterior samples from the multiple regression model that you estimated in T
 Create a plot that shows the predicted point distribution along the actual point distribution from Season `Season` 6 to 10. 
 
 ```{r}
-#write code here
+#  Making predictions using the Task 1.2 model
+predictions_1.2 <- link(model_1.2, data = shaq_test)
+
+# Getting average estimates
+pred_mean_1.2 <- apply(predictions_1.2, 2, mean)
+
+# Plot that shows the predicted point distribution along the actual point distribution
+ggplot() +
+  geom_point(aes(x = shaq_test$PTS, y = pred_mean_1.2), color = "#ff02ff") +
+  geom_abline(intercept = 0, slope = 1, color = "blue") +
+  labs(x = "Actual Points", y = "Predicted Points", title = "Multiple Regression Model Predictions")
+
+
+
 ```
 
 \newpage
