@@ -123,7 +123,17 @@ Create a data table that entails 10,000 posterior samples (rows) for each subjec
 (columns) intercept. Convert the sampled values into probabilities and print the first 10
 samples of the first 10 subjects.
 ```{r}
+# posterior samples for subject-specific intercepts
+posterior_samples <- extract.samples(model_random)
 
+subject_intercepts <- posterior_samples$a
+
+# converting the sampled values into probabilities using the logistic function
+subject_probabilities <- 1 / (1 + exp(-subject_intercepts))
+
+posterior_table <- as.data.frame(subject_probabilities)
+
+print(head(posterior_table[, 1:10], 10))
 ```
 
 
@@ -131,13 +141,25 @@ samples of the first 10 subjects.
 Use the posterior samples to plot the posterior distribution of all subject-specific intercepts to
 show the variability in the performance among subjects. Use the converted values (probabilities).
 ```{r}
+# pivot data to a longer format
+posterior_long <- pivot_longer(posterior_table, cols = everything(), names_to = "Subject", values_to = "Probability")
 
+# posterior density plot
+ggplot(posterior_long, aes(x = Probability, group = Subject)) +
+  geom_density(alpha = 0.5) +
+  theme_light()
 ```
 
 ## 2.3
-Consider the following posterior summaries and traceplots. Which model was estimated and
-what might be the cause of the convergence problems?
-```{r}
 
-```
+Consider the following posterior summaries and trace plots. Which model was estimated and what might be the cause of the convergence problems?
+
+- For the estimated model, the parameters mu_a and tau_a are representing the mean and standard deviation of the intercepts.
+
+- The same applies for the parameters mu_b and tau_b for the slopes, suggesting a  multilevel model with random intercepts and slopes.
+
+- tau_b is showing signs of convergence issues, which may indicate that the model is not well-specified or that the data.
+
+- Having a low value ess_bulk of 43.68 and an rhat of 1.11 which should have been close to 1 may indicate potential convergence issues.
+
 
