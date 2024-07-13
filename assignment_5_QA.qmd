@@ -116,3 +116,28 @@ compare_models <- compare(model_fixed, model_random)
 print(compare_models)
 ```
 
+## Task Set 2
+### 2.1
+
+Create a data table that entails 10,000 posterior samples (rows) for each subject-specific
+(columns) intercept. Convert the sampled values into probabilities and print the first 10
+samples of the first 10 subjects.
+```{r}
+
+```
+
+
+## 2.2
+Use the posterior samples to plot the posterior distribution of all subject-specific intercepts to
+show the variability in the performance among subjects. Use the converted values (probabilities).
+```{r}
+
+```
+
+## 2.3
+Consider the following posterior summaries and traceplots. Which model was estimated and
+what might be the cause of the convergence problems?
+```{r}
+
+```
+
