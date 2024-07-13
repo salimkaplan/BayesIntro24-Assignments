@@ -1,0 +1,118 @@
+---
+title: "Assignment-5 Q&A Bilge Salman (03796071), Salim Kaplan (0378856) GitHub link: https://github.com/salimkaplan/BayesIntro24-Assignments/tree/main"
+format: pdf
+editor_options: 
+  chunk_output_type: console
+editor: 
+  markdown: 
+    wrap: sentence
+echo: true
+eval: true
+output: false
+---
+
+```{r}
+# load packages here
+library(rethinking)
+library(tidyverse)
+library(tidyr)
+
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff = 50))
+```
+
+Load the data set RiskyChoice.csv to solve the Task Set 1. Use the read_csv2() function
+instead of read_csv().
+```{r}
+# Load the data set
+data <- read_csv2("RiskyChoice.csv")
+```
+
+## Task Set 1
+
+### 1.1
+Create a reduced data table with only one row per subject that shows the number of solved
+choices problems (nChoice) and the number of correct choices (nCorrect) for each subject
+along with the other variables. Remove the subjects with missing values. Print the data of
+the first 10 subjects.
+```{r}
+# 1.1
+# Summarize data
+reduced_data <- data %>%
+  group_by(Subject) %>%
+  summarise(
+    nChoice = sum(CorrectChoice, na.rm = TRUE) + sum(RiskyChoice, na.rm = TRUE),
+    nCorrect = sum(CorrectChoice, na.rm = TRUE),
+    Numeracy = first(Numeracy),  
+    AgeGroup = first(AgeGroup),  
+    Gender = first(Gender)       
+  ) %>%
+  na.omit() 
+
+print(head(reduced_data, 10))
+```
+
+### 1.2
+Run a Bayesian regression model that predicts nCorrect from Numeracy using fixed intercepts
+and fixed slopes. Standardize the predictor before running the model and compute the WAIC
+of the model.
+```{r}
+# 1.2
+reduced_data$Numeracy_s <- scale(reduced_data$Numeracy)
+
+data_list <- list(
+  nCorrect = reduced_data$nCorrect,
+  Numeracy = reduced_data$Numeracy_s
+)
+
+# Bayesian regression model
+model_fixed <- ulam(
+  alist(
+    nCorrect ~ dnorm(mu, sigma),
+    mu <- a + b * Numeracy,
+    a ~ dnorm(0, 1),
+    b ~ dnorm(0, 1),
+    sigma ~ dexp(1)
+  ), 
+  data = data_list,
+  chains = 4,
+  cores = 4,
+  log_lik = TRUE)
+
+# WAIC
+waic_fixed <- WAIC(model_fixed)
+print(waic_fixed)
+```
+
+### 1.3
+Run a Bayesian regression model that predicts nCorrect from Numeracy using random intercepts
+and fixed slopes. Standardize the predictor before running the model and compute the
+WAIC of the model.
+```{r}
+# 1.3
+# list for ulam with subject indices
+data_list_random <- list(
+  nCorrect = reduced_data$nCorrect,
+  Numeracy = reduced_data$Numeracy_s,
+  Subject = as.integer(as.factor(reduced_data$Subject)))
+
+# Bayesian regression model 
+model_random <- ulam(
+  alist(
+    nCorrect ~ dnorm(mu, sigma),
+    mu <- a[Subject] + b * Numeracy,
+    a[Subject] ~ dnorm(0, 1),
+    b ~ dnorm(0, 1),
+    sigma ~ dexp(1)), 
+  data = data_list_random,
+  chains = 4,
+  cores = 4,
+  log_lik = TRUE)
+
+# WAIC
+waic_random <- WAIC(model_random)
+print(waic_random)
+
+compare_models <- compare(model_fixed, model_random)
+print(compare_models)
+```
+

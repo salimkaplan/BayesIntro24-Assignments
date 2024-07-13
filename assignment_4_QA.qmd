@@ -1,0 +1,212 @@
+---
+title: "Assignment-3 Q&A Bilge Salman (03796071), Salim Kaplan (0378856) GitHub link: https://github.com/salimkaplan/BayesIntro24-Assignments/tree/main"
+format: pdf
+editor_options: 
+  chunk_output_type: console
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r}
+# load packages here
+library(tidyverse)
+library(tibble)
+library(rethinking)
+library(here)
+library(rstan)
+
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff = 50))
+```
+
+
+
+## Task 1.1
+
+Use the training data and estimate a simple regression model where you predict points (PTS) from field goal attempts (FGA). 
+Specify the regression model such that the intercept represents the expected number of points, given an average number of FGA.
+Provide a table that summarizes the posterior distribution. 
+
+```{r}
+# Task 1.1
+# Loading Shaq data
+data_path <- here("shaq.csv")
+shaq <- read.csv(data_path)
+
+# Training data set
+shaq_training <- shaq %>% filter(Season <= 5)
+
+# simple linear model
+model_1.1 <- quap(
+  alist(
+    PTS ~ dnorm(mu, sigma), # likelihood
+    mu <- a + b * FGA, # linear model
+    a ~ dunif(0,10), # prior intercept
+    b ~ dunif(0, 3), # prior rate of change (slope)
+    sigma ~ dunif(0,10) # prior sd
+  ),
+  data = shaq_training
+)
+
+# Summary table of posterior distribution 
+precis(model_1.1)
+
+
+```
+
+
+## Task 1.2 
+
+Estimate a multiple regression model, where you add free throw attempts (FTA) as a second predictor. 
+Again, the intercept should represents the expected number of points, given an average number of FGA and FTA.
+Provide a table that summarizes the posterior distribution.
+
+```{r}
+# Task 1.2
+# multiple linear model
+model_1.2 <- quap(
+  alist(
+    PTS ~ dnorm(mu, sigma),
+    mu <- a + bFGA * FGA * 2 + bFTA * FTA,
+    a ~ dunif(0, 10),
+    bFGA ~ dunif(0, 1),
+    bFTA ~  dunif(0, 1),
+    sigma ~ dunif(0, 8)
+  ),
+  data = shaq_training
+)
+
+# Summary table of posterior distribution 
+precis(model_1.2)
+
+```
+
+
+\newpage
+
+# Task Set 2
+
+For Tasks 2.1 and 2.2, create a training data set `shaq_test` that contains all the data from the `Season` 6 to 10. 
+
+```{r}
+# Test data set
+shaq_test <- shaq %>% filter(Season >= 6 & Season <= 10)
+
+```
+
+# Task 2.1 
+
+Use posterior samples from the simple regression model that you estimated in Task 1.1 and the FGA data from the test set to predict new points. 
+Create a plot that shows the predicted point distribution along the actual point distribution from Season `Season` 6 to 10. 
+
+```{r}
+# Making predictions using the Task 1.1 model
+predictions_1.1 <- link(model_1.1, data = shaq_test)
+
+# Getting average estimates
+pred_mean_1.1 <- apply(predictions_1.1, 2, mean)
+
+# Plot that shows the predicted point distribution along the actual point distribution
+ggplot() +
+  geom_point(aes(x = shaq_test$PTS, y = pred_mean_1.1), color = "#ff02ff") +
+  geom_abline(intercept = 0, slope = 1, color = "blue") +
+  labs(x = "Actual Points", y = "Predicted Points", title = "Simple Regression Model Predictions")
+
+
+
+```
+
+
+# Task 2.2 
+
+Use posterior samples from the multiple regression model that you estimated in Task 1.2 and the FGA and FTA data from the test set to predict new points. 
+Create a plot that shows the predicted point distribution along the actual point distribution from Season `Season` 6 to 10. 
+
+```{r}
+#  Making predictions using the Task 1.2 model
+predictions_1.2 <- link(model_1.2, data = shaq_test)
+
+# Getting average estimates
+pred_mean_1.2 <- apply(predictions_1.2, 2, mean)
+
+# Plot that shows the predicted point distribution along the actual point distribution
+ggplot() +
+  geom_point(aes(x = shaq_test$PTS, y = pred_mean_1.2), color = "#ff02ff") +
+  geom_abline(intercept = 0, slope = 1, color = "blue") +
+  labs(x = "Actual Points", y = "Predicted Points", title = "Multiple Regression Model Predictions")
+
+
+
+```
+
+\newpage
+
+# Task Set 3
+
+## Task 3.1 
+
+Write a function `error()` that takes the predicted points $\hat{y}$ and the observed points $y$ to compute the sum of squared errors:
+
+$$
+\sum_i^n(\hat{y}_i - y_i)^2
+$$
+Compute the squared errors for the simple regression model and the multiple regression model. 
+Which model makes better predictions for the test data? 
+
+```{r}
+# Error function to calculate the sum of squared errors
+error <- function(predicted, observed) {
+  sum((predicted - observed)^2)
+}
+
+# Error for simple regression model (Task 1.1)
+error_1.1 <- error(pred_mean_1.1, shaq_test$PTS)
+
+# Error for multiple regression model (Task 1.2)
+error_1.2 <- error(pred_mean_1.2, shaq_test$PTS)
+
+# Results
+cat( "Error for simple regression model", error_1.1, "\n")
+cat("Error for multiple regression model", error_1.2, "\n")
+
+# Which model makes better predictions for the test data?
+
+# The Multiple Regression Model looks at not only FGA but also FTA. 
+# This additional information helps the model make more accurate predictions. 
+# Therefore, a multiple regression model that includes more variables and relies 
+# on more information has the potential to improve predictions.
+```
+
+
+## Task 3.2
+
+For both models, compute the (non-squared) differences between each prediction and observation. 
+Create a plot that shows the distributions of differences for both models. 
+
+```{r}
+# Computing the (non-squared) differences
+diff_1.1 <- pred_mean_1.1 - shaq_test$PTS
+diff_1.2 <- pred_mean_1.2 - shaq_test$PTS
+
+# Plot shows the distributions of differences for both models
+data_diff <- data.frame(
+  Model = rep(c("Simple Regression", "Multiple Regression"), 
+              each = length(diff_1.1)),
+  Difference = c(diff_1.1, diff_1.2)
+)
+
+ggplot(data_diff, aes(x = Difference, fill = Model)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Distribution of Differences Between Prediction and Actual Scores",
+       x = "Differences", y = "Density")
+```
+
+
+
+
+
+
+
+
+
+
